@@ -1,0 +1,144 @@
+import random
+
+MXL = 3
+MXB = 100
+MIB = 5
+
+
+ROW = 3
+COL = 3
+
+symbol_count = {
+    "A": 3,
+    "B": 4,
+    "C": 8,
+    "D": 15
+}
+
+symbol_value = {
+    "A": 10,
+    "B": 5,
+    "C": 2,
+    "D": 1
+}
+
+def check_winnings(columns, lines, bet, values ):
+    winnings = 0
+    winning_lines = []
+
+    for line in range(lines):
+        symbol = columns[0][line]
+        for column in columns:
+            symboltc = column[line]
+            if symbol != symboltc:
+                break
+        else:
+            winnings += values[symbol] * bet
+            winning_lines.append(line+1)
+    
+    return winnings, winning_lines
+
+
+def get_results(rows, cols, symbols):
+
+    all_symbols = []
+
+    for symbol, symbol_count in symbols.items():
+        for _ in range(symbol_count):
+            all_symbols.append(symbol)
+    columns = []
+    for col in range(cols):
+        columnindiv = []
+        current_symbols = all_symbols[:] #use a copy instead of a reference
+
+        for row in range(rows):
+            value = random.choice(current_symbols)
+            current_symbols.remove(value)
+            columnindiv.append(value)
+
+        columns.append(columnindiv)
+    return columns
+
+def print_slot(columns):
+    for row in range(len(columns[0])):
+        for i, column in enumerate(columns):
+            if i != len(columns) -1:
+                print(column[row], end = " | ")
+            else :
+                print(column[row], end="")
+        print()
+
+def deposit(): 
+    while True :
+        amount = input("What is your deposit? $")
+        if amount.isdigit():
+            amount = int(amount)
+            if amount > 0:
+                break
+            else:
+                print("Amount must be greater than zero!")
+        else:
+            print("Please enter a valid number above zero")
+    return amount
+
+def get_nmb_lines():
+    while True :
+        lines = input("Enter the number of lines to bet on (1-" + str(MXL) + ") ")
+        if lines.isdigit():
+            lines = int(lines)
+            if 1 <= lines <= MXL:
+                break
+            else:
+                print("lines must be greater than zero!")
+        else:
+            print("Please enter a valid number above zero")
+    return lines
+
+def get_bet():
+    while True :
+        bet = input("What is your bet? $")
+        if bet.isdigit():
+            bet = int(bet)
+            if bet > 0:
+                break
+            else:
+                print(f"Bet must be between  ${MIB} - ${MXB}!")
+        else:
+            print("Please enter a valid number above zero")
+    return bet
+
+def game(balance):
+    lines = get_nmb_lines()
+    while True:
+         bet = get_bet()
+         total_bet = bet * lines
+         if total_bet > balance :
+             print(f"You cannot bet above your balance! Your current balance:{balance}")
+         else:
+            break
+    balance -= total_bet
+    print(f"Your are betting ${bet} on {lines} lines. Your total balance is {balance}")
+    slots = get_results(ROW, COL, symbol_count)
+    print_slot(slots)
+    winnings, winning_lines = check_winnings(slots, lines, bet, symbol_value)
+    print(f"Your winnings are: ${winnings}")
+    if(winnings>0):
+         print(f"You won on line:", *winning_lines)
+    
+    balance += winnings
+    return balance
+
+def main():
+    balance = deposit()
+    while True:
+        print(f"Current balance is ${balance}")
+        sping = input("Press enter to spin (q to quit)")
+        if sping == 'q':
+            break
+        else: 
+            balance = game(balance)
+    print(f"You left with ${balance}. Thanks for playing!")
+
+
+
+main()
