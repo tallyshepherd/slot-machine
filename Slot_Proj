@@ -137,7 +137,7 @@ def main():
             break
         else: 
             balance = game(balance)
-    print(f"You left with ${balance}. Thanks for playing!")
+    print(f"You left with ${balance}. Thank you for playing!")
 
 
 
